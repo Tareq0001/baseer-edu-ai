@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بَصِير | Baseer Edu AI — Student Performance Analytics</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='34' font-family='sans-serif' font-weight='bold'%3EB%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-canvas: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --accent: #0f766e;
+      --accent-hover: #115e59;
+      --accent-soft: #ccfbf1;
+      --accent-ink: #0f766e;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --crimson: #dc2626;
+      --crimson-soft: #fee2e2;
+      --emerald: #059669;
+      --emerald-soft: #d1fae5;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --radius: 12px;
+      --font-sans: "IBM Plex Sans Arabic", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+    }
+
+    html[data-theme="dark"] {
+      --bg-canvas: #0c131a;
+      --bg-surface: #131d27;
+      --bg-subtle: #182532;
+      --border: #233344;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #2dd4bf;
+      --accent-hover: #14b8a6;
+      --accent-soft: rgba(45, 212, 191, 0.14);
+      --accent-ink: #5eead4;
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.16);
+      --crimson: #f87171;
+      --crimson-soft: rgba(248, 113, 113, 0.16);
+      --emerald: #34d399;
+      --emerald-soft: rgba(52, 211, 153, 0.15);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 24px 48px;
+    }
+
+    .topbar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .topbar-inner {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    html[data-theme="dark"] .brand-mark {
+      color: #0c131a;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mode-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--accent-soft);
+      color: var(--accent-ink);
+      border: 1px solid transparent;
+    }
+
+    .mode-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-subtle);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    html[data-theme="dark"] .btn-primary {
+      color: #0c131a;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.45fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .chart-box {
+      position: relative;
+      width: 100%;
+      height: 240px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .input, .select, .textarea {
+      background: var(--bg-canvas);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .input:focus, .select:focus, .textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    th, td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: start;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      background: var(--bg-subtle);
+    }
+
+    tr:hover td {
+      background: var(--bg-subtle);
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+      direction: ltr;
+      display: inline-block;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .tier-CRITICAL { background: var(--crimson-soft); color: var(--crimson); }
+    .tier-HIGH { background: var(--amber-soft); color: var(--amber); }
+    .tier-MEDIUM { background: var(--accent-soft); color: var(--accent-ink); }
+    .tier-LOW { background: var(--emerald-soft); color: var(--emerald); }
+
+    .skill-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      margin-inline-end: 4px;
+    }
+
+    .risk-bar-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 110px;
+    }
+
+    .risk-bar {
+      width: 64px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .risk-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .drawer-backdrop, .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 60;
+      display: none;
+      align-items: stretch;
+      justify-content: flex-end;
+    }
+
+    .drawer-backdrop.open {
+      display: flex;
+    }
+
+    .modal-backdrop {
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .drawer {
+      width: min(640px, 100vw);
+      background: var(--bg-surface);
+      border-inline-start: 1px solid var(--border);
+      height: 100%;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .modal {
+      width: min(680px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .drawer-section {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .contrib-row {
+      margin-bottom: 10px;
+    }
+
+    .contrib-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+    }
+
+    .contrib-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-subtle);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .contrib-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    .remediation-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 0.84rem;
+    }
+
+    .status-msg {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.83rem;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .status-msg.show { display: block; }
+    .status-msg.ok { background: var(--emerald-soft); color: var(--emerald); }
+    .status-msg.err { background: var(--crimson-soft); color: var(--crimson); }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 960px) {
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+      .container, .topbar-inner { padding-inline: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">ب</div>
+        <div>
+          <h1 id="brandTitle">بَصِير | Baseer Edu AI</h1>
+          <p id="brandSubtitle">منصة تحليل الأداء الطلابي والتشخيص التنبؤي — أ. طارق ابوعشي</p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <span class="mode-pill" id="modeBadge">
+          <span class="mode-dot"></span>
+          <span id="modeText">جاري الاتصال...</span>
+        </span>
+        <button type="button" class="btn" id="ingestBtn">+ استيراد CSV</button>
+        <button type="button" class="btn" id="resetBtn">إعادة ضبط العينة</button>
+        <button type="button" class="btn" id="langToggle">EN</button>
+        <button type="button" class="btn" id="themeToggle">الوضع الداكن</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="kpi-grid" aria-label="Cohort KPIs">
+      <div class="card">
+        <div class="kpi-label" id="kpiLabelStudents">إجمالي الطلاب</div>
+        <div class="kpi-value" id="kpiStudents">0</div>
+        <div class="kpi-sub" id="kpiSubAssessments">0 تقييم مسجل</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label" id="kpiLabelMastery">متوسط الإتقان العام</div>
+        <div class="kpi-value" id="kpiMastery">0%</div>
+        <div class="kpi-sub" id="kpiSubMastery">الحد المستهدف >= 70%</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label" id="kpiLabelRisk">الطلاب المعرضون للخطر</div>
+        <div class="kpi-value" id="kpiAtRisk">0</div>
+        <div class="kpi-sub" id="kpiSubCritical">0 حالة حرجة (CRITICAL)</div>
+      </div>
+      <div class="card">
+        <div class="kpi-label" id="kpiLabelInterventions">التدخلات النشطة</div>
+        <div class="kpi-value" id="kpiInterventions">0</div>
+        <div class="kpi-sub" id="kpiSubInterventions">خطط علاجية قيد المتابعة</div>
+      </div>
+    </section>
+
+    <section class="charts-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" id="riskChartTitle">توزيع مستويات الخطر</h2>
+            <span class="card-subtitle" id="riskChartSub">نموذج التقييم التفسيري (0 - 100)</span>
+          </div>
+        </div>
+        <div class="chart-box">
+          <canvas id="riskChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" id="skillChartTitle">مصفوفة الفجوات المهارية</h2>
+            <span class="card-subtitle" id="skillChartSub">نسبة التعثر (&lt; 65%) حسب مهارة المهارات الرقمية</span>
+          </div>
+        </div>
+        <div class="chart-box">
+          <canvas id="skillChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="rosterTitle">سجل التشخيص التنبؤي للطلاب</h2>
+          <span class="card-subtitle" id="rosterSub">مرتب تنازلياً حسب درجة الخطر لتسريع التدخل المبكر</span>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" class="input" id="searchInput" placeholder="بحث برقم أو اسم الطالب..." style="min-width: 220px;" />
+        <select class="select" id="gradeFilter">
+          <option value="ALL">جميع الصفوف</option>
+          <option value="الصف الأول متوسط">الصف الأول متوسط</option>
+          <option value="الصف الثاني متوسط">الصف الثاني متوسط</option>
+          <option value="الصف الثالث متوسط">الصف الثالث متوسط</option>
+        </select>
+        <select class="select" id="tierFilter">
+          <option value="ALL">كل مستويات الخطر</option>
+          <option value="CRITICAL">CRITICAL</option>
+          <option value="HIGH">HIGH</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="LOW">LOW</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th id="thId">المعرف</th>
+              <th id="thName">المتعلم</th>
+              <th id="thGrade">الصف</th>
+              <th id="thMastery">الإتقان</th>
+              <th id="thSlope">ميل الاتجاه</th>
+              <th id="thCompletion">الإنجاز</th>
+              <th id="thRiskScore">درجة الخطر</th>
+              <th id="thTier">المستوى</th>
+              <th id="thWeakSkills">المهارات الأضعف</th>
+              <th id="thAction">التشخيص</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span id="footerLeft">منصة بَصِير لتحليل الأداء الطلابي — تطوير أ. طارق ابوعشي | متوسطة أبها الأهلية</span>
+      <span class="mono">OLS Trend Regression · Explainable Risk Engine · SQLite WAL / Browser Lab</span>
+    </footer>
+  </main>
+
+  <!-- Student Diagnosis Drill-Down Drawer -->
+  <div class="drawer-backdrop" id="drawerBackdrop" role="dialog" aria-modal="true">
+    <div class="drawer">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="drawerName">---</h2>
+          <span class="card-subtitle" id="drawerMeta">---</span>
+        </div>
+        <button type="button" class="btn btn-sm" id="closeDrawerBtn">إغلاق</button>
+      </div>
+
+      <div id="drawerSummaryRow" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;"></div>
+
+      <div class="drawer-section">
+        <h3 class="card-title" id="drawerChartTitle" style="font-size:0.95rem; margin-bottom:10px;">مسار الدرجات وخط الانحدار الخطي</h3>
+        <div class="chart-box" style="height:190px;">
+          <canvas id="trajectoryChart"></canvas>
+        </div>
+      </div>
+
+      <div class="drawer-section">
+        <h3 class="card-title" id="drawerContribTitle" style="font-size:0.95rem; margin-bottom:10px;">تفسير درجة الخطر (Feature Contributions)</h3>
+        <div id="drawerContribs"></div>
+        <ul id="drawerReasons" style="margin:10px 0 0; padding-inline-start:18px; font-size:0.84rem; color:var(--text-muted);"></ul>
+      </div>
+
+      <div class="drawer-section">
+        <h3 class="card-title" id="drawerRemediationTitle" style="font-size:0.95rem; margin-bottom:10px;">الخطة العلاجية التكيفية</h3>
+        <p id="drawerRemSummary" style="font-size:0.85rem; margin:0 0 10px;"></p>
+        <div id="drawerRemSteps"></div>
+      </div>
+
+      <div class="drawer-section">
+        <h3 class="card-title" id="drawerInterventionTitle" style="font-size:0.95rem; margin-bottom:10px;">تسجيل تدخل تربوي</h3>
+        <form id="interventionForm" style="display:grid; gap:8px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <select class="select" id="ivActionType">
+              <option value="1-on-1 Lab Coaching">1-on-1 Lab Coaching</option>
+              <option value="Scaffolded Worksheet">Scaffolded Worksheet</option>
+              <option value="Peer Mentoring">Peer Mentoring</option>
+              <option value="Parent Update">Parent Update</option>
+            </select>
+            <select class="select" id="ivStatus">
+              <option value="PLANNED">PLANNED</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
+          </div>
+          <textarea class="textarea" id="ivNotes" rows="2" placeholder="ملاحظات الخطة العلاجية..." required></textarea>
+          <button type="submit" class="btn btn-primary" id="ivSubmitBtn">حفظ التدخل</button>
+        </form>
+        <div class="status-msg" id="ivStatusMsg"></div>
+        <div id="drawerInterventionsList" style="margin-top:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV Ingestion Modal -->
+  <div class="modal-backdrop" id="csvModalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title" id="csvModalTitle">استيراد دفعة تقييمات CSV</h2>
+          <span class="card-subtitle" id="csvModalSub">الأعمدة المطلوبة: student_id, skill, score, assessment_date</span>
+        </div>
+        <button type="button" class="btn btn-sm" id="closeCsvBtn">إغلاق</button>
+      </div>
+
+      <div style="margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-sm" id="fillSampleCsvBtn">تعبئة مثال تجريبي</button>
+      </div>
+
+      <textarea class="textarea" id="csvInput" rows="8" style="width:100%; font-family:var(--font-mono); font-size:0.8rem; direction:ltr;" placeholder="student_id,full_name,grade_level,skill,assessment_title,score,assessment_date"></textarea>
+      <div class="status-msg" id="csvStatusMsg"></div>
+
+      <div style="margin-top:14px; display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-primary" id="submitCsvBtn">تحليل واستيراد الدفعة</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const CURRICULUM_SKILLS = [
+        "Python Logic",
+        "Network Fundamentals",
+        "Cyber Hygiene",
+        "Data & Spreadsheets",
+        "Algorithms"
+      ];
+
+      const SKILL_META = {
+        "Python Logic": {
+          ar: "منطق بايثون والبرمجة",
+          step_ar: "تطبيق تمارين متدرجة على المتغيرات والحلقات والشروط في محاكي بايثون مع تتبع المخرجات سطراً بسطر.",
+          step_en: "Complete scaffolded Python loop and conditional tracing exercises with step-by-step output verification."
+        },
+        "Network Fundamentals": {
+          ar: "أساسيات الشبكات والبروتوكولات",
+          step_ar: "مراجعة بنية الحزم وعناوين IP وبروتوكولات TCP/HTTP عبر محاكي توجيه الشبكة.",
+          step_en: "Review packet flow, IP addressing, and TCP/HTTP layers using interactive network routing scenarios."
+        },
+        "Cyber Hygiene": {
+          ar: "الأمن السيبراني والوعي الرقمي",
+          step_ar: "حل سيناريوهات كشف التصيد الإلكتروني وإعداد كلمات المرور القوية والمصادقة الثنائية.",
+          step_en: "Practice phishing triage scenarios, strong password hygiene, and multi-factor authentication checks."
+        },
+        "Data & Spreadsheets": {
+          ar: "تحليل البيانات والجداول الإلكترونية",
+          step_ar: "بناء جدول تطبيقي باستخدام دوال SUM و AVERAGE و IF مع التحقق من صحة البيانات.",
+          step_en: "Build a guided spreadsheet lab using SUM, AVERAGE, IF formulas, and conditional data validation."
+        },
+        "Algorithms": {
+          ar: "الخوارزميات وحل المشكلات",
+          step_ar: "تفكيك المسائل إلى خطوات منطقية ومقارنة البحث الخطي والثنائي بمخططات التدفق.",
+          step_en: "Decompose problems into flowcharts and trace linear vs. binary search step counts."
+        }
+      };
+
+      const I18N = {
+        ar: {
+          brandTitle: "بَصِير | Baseer Edu AI",
+          brandSubtitle: "منصة تحليل الأداء الطلابي والتشخيص التنبؤي — أ. طارق ابوعشي",
+          modeLive: "وضع الخادم الحي (FastAPI)",
+          modeLab: "معمل التحليل التفاعلي (Browser Lab)",
+          ingestBtn: "+ استيراد CSV",
+          resetBtn: "إعادة ضبط العينة",
+          langToggle: "EN",
+          themeDark: "الوضع الداكن",
+          themeLight: "الوضع الفاتح",
+          kpiLabelStudents: "إجمالي الطلاب",
+          kpiLabelMastery: "متوسط الإتقان العام",
+          kpiSubMastery: "الحد المستهدف >= 70%",
+          kpiLabelRisk: "الطلاب المعرضون للخطر",
+          kpiLabelInterventions: "التدخلات النشطة",
+          kpiSubInterventions: "خطط علاجية قيد المتابعة",
+          riskChartTitle: "توزيع مستويات الخطر",
+          riskChartSub: "نموذج التقييم التفسيري (0 - 100)",
+          skillChartTitle: "مصفوفة الفجوات المهارية",
+          skillChartSub: "نسبة التعثر (< 65%) حسب مهارات المنهج",
+          rosterTitle: "سجل التشخيص التنبؤي للطلاب",
+          rosterSub: "مرتب تنازلياً حسب درجة الخطر لتسريع التدخل المبكر",
+          searchPlaceholder: "بحث برقم أو اسم الطالب...",
+          allGrades: "جميع الصفوف",
+          allTiers: "كل مستويات الخطر",
+          thId: "المعرف",
+          thName: "المتعلم",
+          thGrade: "الصف",
+          thMastery: "الإتقان",
+          thSlope: "ميل الاتجاه",
+          thCompletion: "الإنجاز",
+          thRiskScore: "درجة الخطر",
+          thTier: "المستوى",
+          thWeakSkills: "المهارات الأضعف",
+          thAction: "التشخيص",
+          diagnoseBtn: "تشخيص",
+          closeBtn: "إغلاق",
+          drawerChartTitle: "مسار الدرجات وخط الانحدار الخطي (OLS)",
+          drawerContribTitle: "تفسير درجة الخطر (Feature Contributions)",
+          drawerRemediationTitle: "الخطة العلاجية التكيفية",
+          drawerInterventionTitle: "تسجيل تدخل تربوي",
+          ivSubmitBtn: "حفظ التدخل",
+          ivNotesPlaceholder: "ملاحظات الخطة العلاجية...",
+          csvModalTitle: "استيراد دفعة تقييمات CSV",
+          csvModalSub: "الأعمدة المطلوبة: student_id, skill, score, assessment_date",
+          fillSampleCsvBtn: "تعبئة مثال تجريبي",
+          submitCsvBtn: "تحليل واستيراد الدفعة",
+          footerLeft: "منصة بَصِير لتحليل الأداء الطلابي — تطوير أ. طارق ابوعشي | متوسطة أبها الأهلية",
+          masteryDeficit: "فجوة الإتقان (حد أقصى 45)",
+          negativeTrajectory: "تراجع المسار (حد أقصى 25)",
+          completionGap: "فجوة الإنجاز (حد أقصى 15)",
+          skillGap: "تركّز الضعف المهاري (حد أقصى 15)",
+          noWeakSkills: "متوازن",
+          assessmentsSuffix: "تقييم مسجل",
+          criticalSuffix: "حالة حرجة (CRITICAL)"
+        },
+        en: {
+          brandTitle: "Baseer Edu AI | بَصِير",
+          brandSubtitle: "AI Student Performance Analytics & Diagnostic Platform — Tareq Abuashi",
+          modeLive: "Live FastAPI Mode",
+          modeLab: "Interactive Browser Lab",
+          ingestBtn: "+ Ingest CSV",
+          resetBtn: "Reset Demo",
+          langToggle: "عربي",
+          themeDark: "Dark Mode",
+          themeLight: "Light Mode",
+          kpiLabelStudents: "Total Students",
+          kpiLabelMastery: "Cohort Avg Mastery",
+          kpiSubMastery: "Target benchmark >= 70%",
+          kpiLabelRisk: "At-Risk Students",
+          kpiLabelInterventions: "Active Interventions",
+          kpiSubInterventions: "Remediation plans in progress",
+          riskChartTitle: "Risk Tier Distribution",
+          riskChartSub: "Deterministic Explainable Score (0 - 100)",
+          skillChartTitle: "Cohort Skill-Gap Matrix",
+          skillChartSub: "Weakness rate (< 65%) across Digital Skills",
+          rosterTitle: "Predictive Student Diagnostic Roster",
+          rosterSub: "Sorted descending by risk score for early intervention",
+          searchPlaceholder: "Search by student ID or name...",
+          allGrades: "All Grade Levels",
+          allTiers: "All Risk Tiers",
+          thId: "ID",
+          thName: "Learner",
+          thGrade: "Grade Level",
+          thMastery: "Mastery",
+          thSlope: "Trend Slope",
+          thCompletion: "Completion",
+          thRiskScore: "Risk Score",
+          thTier: "Risk Tier",
+          thWeakSkills: "Weak Skills",
+          thAction: "Diagnosis",
+          diagnoseBtn: "Diagnose",
+          closeBtn: "Close",
+          drawerChartTitle: "Assessment Trajectory & OLS Regression Line",
+          drawerContribTitle: "Explainable Risk Feature Contributions",
+          drawerRemediationTitle: "Adaptive Remediation Plan",
+          drawerInterventionTitle: "Record Teacher Intervention",
+          ivSubmitBtn: "Save Intervention",
+          ivNotesPlaceholder: "Intervention notes...",
+          csvModalTitle: "Batch CSV Assessment Ingestion",
+          csvModalSub: "Required columns: student_id, skill, score, assessment_date",
+          fillSampleCsvBtn: "Load Sample CSV",
+          submitCsvBtn: "Validate & Ingest Batch",
+          footerLeft: "Baseer Student Analytics Platform — Engineered by Tareq Abuashi | Abha National Middle School",
+          masteryDeficit: "Mastery Deficit (max 45)",
+          negativeTrajectory: "Negative Trajectory (max 25)",
+          completionGap: "Completion Gap (max 15)",
+          skillGap: "Skill Concentration Gap (max 15)",
+          noWeakSkills: "Balanced",
+          assessmentsSuffix: "assessments logged",
+          criticalSuffix: "CRITICAL cases"
+        }
+      };
+
+      const state = {
+        lang: "ar",
+        theme: localStorage.getItem("baseer_theme") || "light",
+        mode: "lab",
+        overview: null,
+        selectedStudentId: null,
+        selectedDiagnosis: null,
+        labData: { students: [], assessments: [], interventions: [] }
+      };
+
+      function calculateTrendSlope(scores) {
+        const n = scores.length;
+        if (n < 2) return 0;
+        const meanX = (n - 1) / 2;
+        const meanY = scores.reduce((a, b) => a + b, 0) / n;
+        let num = 0;
+        let den = 0;
+        for (let i = 0; i < n; i++) {
+          num += (i - meanX) * (scores[i] - meanY);
+          den += (i - meanX) ** 2;
+        }
+        return den === 0 ? 0 : Number((num / den).toFixed(4));
+      }
+
+      function classifyRiskTier(score) {
+        if (score >= 75) return "CRITICAL";
+        if (score >= 50) return "HIGH";
+        if (score >= 25) return "MEDIUM";
+        return "LOW";
+      }
+
+      function scoreStudentRisk(assessments, expectedAssessments = 5) {
+        const ordered = [...assessments].sort((a, b) =>
+          String(a.assessment_date).localeCompare(String(b.assessment_date)) || (a.id - b.id)
+        );
+        if (ordered.length === 0) {
+          const contributions = {
+            mastery_deficit: 45,
+            negative_trajectory: 0,
+            completion_gap: 15,
+            skill_concentration_gap: 15
+          };
+          return {
+            mastery_avg: 0,
+            trend_slope: 0,
+            trend_direction: "stable",
+            completion_rate: 0,
+            assessment_count: 0,
+            risk_score: 75,
+            risk_tier: "CRITICAL",
+            weak_skills: [...CURRICULUM_SKILLS],
+            skill_breakdown: {},
+            feature_contributions: contributions,
+            reasons_en: ["No assessment submissions recorded yet."],
+            reasons_ar: ["لم تُسجّل أي تقييمات للطالب حتى الآن."]
+          };
+        }
+
+        const scores = ordered.map((r) => {
+          const maxS = Number(r.max_score || 100);
+          return Math.min(100, Math.max(0, (Number(r.score) / maxS) * 100));
+        });
+        const masteryAvg = Number((scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2));
+        const slope = calculateTrendSlope(scores);
+        const trendDirection = slope > 1.5 ? "improving" : slope < -1.5 ? "declining" : "stable";
+        const completionRatio = Math.min(1, ordered.length / Math.max(1, expectedAssessments));
+        const completionRate = Number((completionRatio * 100).toFixed(2));
+
+        const buckets = {};
+        ordered.forEach((rec, idx) => {
+          if (!buckets[rec.skill]) buckets[rec.skill] = [];
+          buckets[rec.skill].push(scores[idx]);
+        });
+        const breakdown = {};
+        Object.keys(buckets).forEach((skill) => {
+          const arr = buckets[skill];
+          breakdown[skill] = Number((arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2));
+        });
+        const weakSkills = Object.keys(breakdown)
+          .filter((s) => breakdown[s] < 65)
+          .sort((a, b) => breakdown[a] - breakdown[b]);
+        const weakestAvg = Math.min(...Object.values(breakdown));
+
+        const masteryDeficit = Number(Math.max(0, Math.min(45, (100 - masteryAvg) * 0.45)).toFixed(2));
+        const negativeTrajectory = slope < 0 ? Number(Math.min(25, Math.abs(slope) * 1.5).toFixed(2)) : 0;
+        const completionGap = Number(Math.max(0, (1 - completionRatio) * 15).toFixed(2));
+        const skillGap = weakestAvg < 70 ? Number(Math.min(15, (70 - weakestAvg) * 0.3).toFixed(2)) : 0;
+
+        const contributions = {
+          mastery_deficit: masteryDeficit,
+          negative_trajectory: negativeTrajectory,
+          completion_gap: completionGap,
+          skill_concentration_gap: skillGap
+        };
+        const riskScore = Number(
+          Math.min(100, Math.max(0, masteryDeficit + negativeTrajectory + completionGap + skillGap)).toFixed(2)
+        );
+        const riskTier = classifyRiskTier(riskScore);
+
+        const reasonsEn = [];
+        const reasonsAr = [];
+        if (masteryAvg < 70) {
+          reasonsEn.push(`Mastery average is ${masteryAvg.toFixed(1)}% (target >= 70%).`);
+          reasonsAr.push(`متوسط الإتقان ${masteryAvg.toFixed(1)}% أقل من الحد المستهدف (70%).`);
+        }
+        if (slope < -1.5) {
+          reasonsEn.push(`Declining score trajectory (slope ${slope >= 0 ? "+" : ""}${slope.toFixed(2)} pts/assessment).`);
+          reasonsAr.push(`مسار الدرجات متراجع (الميل ${slope.toFixed(2)} نقطة لكل تقييم).`);
+        } else if (slope > 1.5) {
+          reasonsEn.push(`Improving score trajectory (slope +${slope.toFixed(2)} pts/assessment).`);
+          reasonsAr.push(`مسار الدرجات متصاعد (الميل +${slope.toFixed(2)} نقطة لكل تقييم).`);
+        }
+        if (completionRate < 100) {
+          reasonsEn.push(`Completed ${ordered.length} of ${expectedAssessments} expected assessments (${completionRate.toFixed(0)}%).`);
+          reasonsAr.push(`أنجز ${ordered.length} من أصل ${expectedAssessments} تقييمات متوقعة (${completionRate.toFixed(0)}%).`);
+        }
+        if (weakSkills.length) {
+          reasonsEn.push(`Weak curriculum skill concentration in: ${weakSkills.join(", ")}.`);
+          reasonsAr.push(`تركّز الضعف المهاري في: ${weakSkills.map((s) => (SKILL_META[s] ? SKILL_META[s].ar : s)).join("، ")}.`);
+        }
+        if (!reasonsEn.length) {
+          reasonsEn.push("Consistent mastery across all evaluated Digital Skills.");
+          reasonsAr.push("إتقان مستقر ومتوازن في جميع مهارات المنهج المقيّمة.");
+        }
+
+        return {
+          mastery_avg: masteryAvg,
+          trend_slope: slope,
+          trend_direction: trendDirection,
+          completion_rate: completionRate,
+          assessment_count: ordered.length,
+          risk_score: riskScore,
+          risk_tier: riskTier,
+          weak_skills: weakSkills,
+          skill_breakdown: breakdown,
+          feature_contributions: contributions,
+          reasons_en: reasonsEn,
+          reasons_ar: reasonsAr
+        };
+      }
+
+      function computeSkillGaps(assessments) {
+        const grouped = {};
+        assessments.forEach((rec) => {
+          if (!grouped[rec.skill]) grouped[rec.skill] = [];
+          const pct = Math.min(100, Math.max(0, (Number(rec.score) / Number(rec.max_score || 100)) * 100));
+          grouped[rec.skill].push({ student_id: rec.student_id, score: pct });
+        });
+        const allSkills = [...CURRICULUM_SKILLS, ...Object.keys(grouped).filter((s) => !CURRICULUM_SKILLS.includes(s))];
+        const gaps = [];
+        allSkills.forEach((skill) => {
+          const items = grouped[skill];
+          if (!items || !items.length) return;
+          const weakCount = items.filter((i) => i.score < 65).length;
+          const weaknessRate = Number(((weakCount / items.length) * 100).toFixed(2));
+          const avgScore = Number((items.reduce((a, b) => a + b.score, 0) / items.length).toFixed(2));
+          gaps.push({
+            skill,
+            skill_ar: SKILL_META[skill] ? SKILL_META[skill].ar : skill,
+            attempt_count: items.length,
+            student_count: new Set(items.map((i) => i.student_id)).size,
+            avg_score: avgScore,
+            weak_count: weakCount,
+            weakness_rate: weaknessRate
+          });
+        });
+        gaps.sort((a, b) => b.weakness_rate - a.weakness_rate || a.avg_score - b.avg_score);
+        return gaps;
+      }
+
+      function generateRemediation(diag, studentName) {
+        const tier = diag.risk_tier;
+        const weak = diag.weak_skills.length ? diag.weak_skills : [Object.keys(diag.skill_breakdown)[0] || "Python Logic"];
+        const summaryEn = tier === "CRITICAL" || tier === "HIGH"
+          ? `${studentName} requires targeted scaffolded support (${tier} risk, trend: ${diag.trend_direction}).`
+          : tier === "MEDIUM"
+            ? `${studentName} shows moderate risk signals; targeted reinforcement will stabilize mastery.`
+            : `${studentName} demonstrates strong mastery. Assign enrichment labs and peer mentoring.`;
+        const summaryAr = tier === "CRITICAL" || tier === "HIGH"
+          ? `يحتاج المتعلم (${studentName}) إلى خطة دعم علاجي مركّزة (مستوى الخطر: ${tier}) لمعالجة الفجوات قبل التقييم القادم.`
+          : tier === "MEDIUM"
+            ? `تظهر لدى المتعلم (${studentName}) مؤشرات خطر متوسطة؛ يكفي تعزيز المهارات الأضعف لتثبيت الإتقان.`
+            : `يُظهر المتعلم (${studentName}) إتقاناً قوياً؛ يُنصح بتكليفه بتحديات إثرائية ودعم الأقران.`;
+
+        const studentActions = weak.slice(0, 3).map((skill) => {
+          const meta = SKILL_META[skill] || {};
+          const cur = diag.skill_breakdown[skill] || 0;
+          return {
+            skill,
+            skill_ar: meta.ar || skill,
+            current_avg: cur,
+            target_score: Math.max(75, Math.min(95, Math.round(cur + 20))),
+            step_ar: meta.step_ar || `مراجعة بطاقات المفهوم وحل تدريب تفاعلي في ${skill}.`,
+            step_en: meta.step_en || `Review concept cards and complete practice in ${skill}.`
+          };
+        });
+        return { summary_ar: summaryAr, summary_en: summaryEn, student_actions: studentActions };
+      }
+
+      function seedLabCohort() {
+        const profiles = [
+          ["DS-101", "متعلم نموذجي #101", "الصف الأول متوسط", [["Data & Spreadsheets", "جداول البيانات", 68, "2026-09-07"], ["Cyber Hygiene", "السلامة الرقمية", 62, "2026-09-14"], ["Network Fundamentals", "أساسيات الشبكات", 50, "2026-09-21"], ["Python Logic", "الشروط في بايثون", 42, "2026-09-28"], ["Algorithms", "مخططات التدفق", 36, "2026-10-05"]]],
+          ["DS-102", "متعلم نموذجي #102", "الصف الثاني متوسط", [["Python Logic", "الحلقات التكرارية", 74, "2026-09-07"], ["Network Fundamentals", "عناوين IP", 58, "2026-09-14"], ["Algorithms", "البحث الخطي", 48, "2026-09-21"], ["Python Logic", "الدوال", 44, "2026-09-28"]]],
+          ["DS-103", "متعلم نموذجي #103", "الصف الثالث متوسط", [["Cyber Hygiene", "حماية الحسابات", 54, "2026-09-08"], ["Python Logic", "القوائم", 49, "2026-09-15"], ["Algorithms", "تحليل الخوارزميات", 45, "2026-09-22"]]],
+          ["DS-104", "متعلم نموذجي #104", "الصف الأول متوسط", [["Data & Spreadsheets", "دالة IF", 78, "2026-09-07"], ["Cyber Hygiene", "التصيد الإلكتروني", 82, "2026-09-14"], ["Network Fundamentals", "طوبولوجيا الشبكات", 55, "2026-09-21"], ["Python Logic", "تتبع الأكواد", 52, "2026-09-28"], ["Algorithms", "تصميم الخوارزمية", 50, "2026-10-05"]]],
+          ["DS-105", "متعلم نموذجي #105", "الصف الثاني متوسط", [["Python Logic", "أساسيات بايثون", 58, "2026-09-07"], ["Network Fundamentals", "بروتوكول HTTP", 64, "2026-09-14"], ["Data & Spreadsheets", "الرسوم البيانية", 72, "2026-09-21"], ["Cyber Hygiene", "المصادقة الثنائية", 80, "2026-09-28"], ["Algorithms", "الترتيب البسيط", 84, "2026-10-05"]]],
+          ["DS-106", "متعلم نموذجي #106", "الصف الثالث متوسط", [["Algorithms", "تفكيك المشكلات", 88, "2026-09-08"], ["Python Logic", "الوحدات البرمجية", 91, "2026-09-15"], ["Network Fundamentals", "أمن الشبكات", 86, "2026-09-22"], ["Cyber Hygiene", "الخصوصية الرقمية", 94, "2026-09-29"], ["Data & Spreadsheets", "تحليل المؤشرات", 90, "2026-10-06"]]],
+          ["DS-107", "متعلم نموذجي #107", "الصف الأول متوسط", [["Data & Spreadsheets", "الجداول الأساسية", 72, "2026-09-07"], ["Network Fundamentals", "مكونات الشبكة", 63, "2026-09-14"], ["Python Logic", "الإدخال والإخراج", 60, "2026-09-21"], ["Cyber Hygiene", "الأمان الرقمي", 77, "2026-09-28"], ["Algorithms", "خطوات الحل", 66, "2026-10-05"]]],
+          ["DS-108", "متعلم نموذجي #108", "الصف الثاني متوسط", [["Python Logic", "الشروط المتداخلة", 44, "2026-09-07"], ["Algorithms", "خوارزميات الفرز", 40, "2026-09-14"], ["Network Fundamentals", "طبقات الشبكة", 38, "2026-09-21"], ["Data & Spreadsheets", "دوال البحث", 52, "2026-09-28"], ["Cyber Hygiene", "النسخ الاحتياطي", 61, "2026-10-05"]]],
+          ["DS-109", "متعلم نموذجي #109", "الصف الثالث متوسط", [["Python Logic", "معالجة النصوص", 83, "2026-09-08"], ["Cyber Hygiene", "التشفير الأساسي", 85, "2026-09-15"], ["Data & Spreadsheets", "الجداول المحورية", 88, "2026-09-22"], ["Algorithms", "التكرار", 79, "2026-09-29"], ["Network Fundamentals", "توجيه البيانات", 82, "2026-10-06"]]],
+          ["DS-110", "متعلم نموذجي #110", "الصف الأول متوسط", [["Data & Spreadsheets", "تنسيق البيانات", 67, "2026-09-07"], ["Cyber Hygiene", "التحقق من الروابط", 71, "2026-09-14"], ["Python Logic", "أول برنامج", 57, "2026-09-21"]]],
+          ["DS-111", "متعلم نموذجي #111", "الصف الثاني متوسط", [["Network Fundamentals", "بروتوكول DNS", 90, "2026-09-07"], ["Python Logic", "تحليل البيانات", 92, "2026-09-14"], ["Algorithms", "كفاءة الخوارزمية", 89, "2026-09-21"], ["Cyber Hygiene", "الصلاحيات", 95, "2026-09-28"], ["Data & Spreadsheets", "النمذجة", 91, "2026-10-05"]]],
+          ["DS-112", "متعلم نموذجي #112", "الصف الثالث متوسط", [["Cyber Hygiene", "هندسة اجتماعية", 70, "2026-09-08"], ["Network Fundamentals", "أدوات الشبكة", 62, "2026-09-15"], ["Python Logic", "الملفات", 54, "2026-09-22"], ["Algorithms", "تتبع التكرار", 51, "2026-09-29"], ["Data & Spreadsheets", "ملخصات رقمية", 64, "2026-10-06"]]]
+        ];
+
+        const students = [];
+        const assessments = [];
+        let idSeq = 1;
+        profiles.forEach(([sid, name, grade, items]) => {
+          students.push({ student_id: sid, full_name: name, grade_level: grade, cohort_term: "Term 2" });
+          items.forEach(([skill, title, score, dt]) => {
+            assessments.push({
+              id: idSeq++,
+              student_id: sid,
+              skill,
+              assessment_title: title,
+              score,
+              max_score: 100,
+              assessment_date: dt
+            });
+          });
+        });
+
+        state.labData = {
+          students,
+          assessments,
+          interventions: [
+            {
+              id: 1,
+              student_id: "DS-101",
+              teacher_name: "أ. طارق ابوعشي",
+              action_type: "1-on-1 Lab Coaching",
+              notes: "مراجعة تتبع الحلقات التكرارية في بايثون وبناء مخطط تدفق مبسط.",
+              status: "IN_PROGRESS",
+              created_at: "2026-10-06T08:30:00Z"
+            },
+            {
+              id: 2,
+              student_id: "DS-108",
+              teacher_name: "أ. طارق ابوعشي",
+              action_type: "Scaffolded Worksheet",
+              notes: "تخصيص ورقة عمل تدريجية لمهارتي أساسيات الشبكات والخوارزميات.",
+              status: "PLANNED",
+              created_at: "2026-10-06T09:15:00Z"
+            }
+          ]
+        };
+      }
+
+      function buildLabOverview() {
+        const { students, assessments, interventions } = state.labData;
+        const dist = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+        const roster = [];
+        const masteries = [];
+
+        students.forEach((stu) => {
+          const recs = assessments.filter((a) => a.student_id === stu.student_id);
+          const diag = scoreStudentRisk(recs);
+          dist[diag.risk_tier] = (dist[diag.risk_tier] || 0) + 1;
+          if (diag.assessment_count > 0) masteries.push(diag.mastery_avg);
+          roster.push({
+            ...stu,
+            assessment_count: diag.assessment_count,
+            mastery_avg: diag.mastery_avg,
+            trend_slope: diag.trend_slope,
+            trend_direction: diag.trend_direction,
+            completion_rate: diag.completion_rate,
+            risk_score: diag.risk_score,
+            risk_tier: diag.risk_tier,
+            weak_skills: diag.weak_skills,
+            feature_contributions: diag.feature_contributions
+          });
+        });
+
+        roster.sort((a, b) => b.risk_score - a.risk_score || a.mastery_avg - b.mastery_avg);
+        const avgMastery = masteries.length ? Number((masteries.reduce((a, b) => a + b, 0) / masteries.length).toFixed(2)) : 0;
+
+        return {
+          kpis: {
+            total_students: students.length,
+            total_assessments: assessments.length,
+            avg_mastery: avgMastery,
+            at_risk_count: dist.CRITICAL + dist.HIGH,
+            critical_count: dist.CRITICAL,
+            open_interventions: interventions.filter((i) => i.status !== "COMPLETED").length
+          },
+          risk_distribution: dist,
+          skill_gaps: computeSkillGaps(assessments),
+          students: roster,
+          recent_interventions: interventions
+        };
+      }
+
+      function parseCsvInLab(csvText) {
+        const lines = csvText.trim().split(/\r?\n/).filter((l) => l.trim().length > 0);
+        if (lines.length < 2) throw new Error("CSV must include a header row and at least one data row");
+        const headers = lines[0].split(",").map((h) => h.trim());
+        ["student_id", "skill", "score", "assessment_date"].forEach((req) => {
+          if (!headers.includes(req)) throw new Error(`Missing required CSV column: ${req}`);
+        });
+
+        let ingested = 0;
+        const affected = new Set();
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(",").map((c) => c.trim());
+          const row = {};
+          headers.forEach((h, idx) => { row[h] = cols[idx] || ""; });
+          if (!row.student_id || !row.skill) throw new Error(`Row ${i + 1}: student_id and skill are required`);
+          const score = Number(row.score);
+          if (Number.isNaN(score) || score < 0 || score > 100) throw new Error(`Row ${i + 1}: score must be between 0 and 100`);
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(row.assessment_date)) throw new Error(`Row ${i + 1}: invalid date format (YYYY-MM-DD)`);
+
+          let existing = state.labData.students.find((s) => s.student_id === row.student_id);
+          if (!existing) {
+            existing = {
+              student_id: row.student_id,
+              full_name: row.full_name || `متعلم نموذجي #${row.student_id}`,
+              grade_level: row.grade_level || "الصف الأول متوسط",
+              cohort_term: "Term 2"
+            };
+            state.labData.students.push(existing);
+          }
+          state.labData.assessments.push({
+            id: state.labData.assessments.length + 1,
+            student_id: row.student_id,
+            skill: row.skill,
+            assessment_title: row.assessment_title || `${row.skill} Checkpoint`,
+            score,
+            max_score: 100,
+            assessment_date: row.assessment_date
+          });
+          ingested++;
+          affected.add(row.student_id);
+        }
+        return { ingested_count: ingested, students_affected: affected.size };
+      }
+
+      async function detectExecutionMode() {
+        if (window.location.protocol === "file:") {
+          state.mode = "lab";
+          return;
+        }
+        try {
+          const res = await fetch("/health", { cache: "no-store" });
+          if (res.ok) {
+            const payload = await res.json();
+            if (payload && payload.service === "baseer-edu-ai") {
+              state.mode = "live";
+              return;
+            }
+          }
+        } catch (_err) {
+          // Static host fallback
+        }
+        state.mode = "lab";
+      }
+
+      async function fetchOverview() {
+        if (state.mode === "live") {
+          const res = await fetch("/api/overview", { cache: "no-store" });
+          if (!res.ok) throw new Error("Failed to load overview");
+          state.overview = await res.json();
+        } else {
+          state.overview = buildLabOverview();
+        }
+        renderDashboard();
+      }
+
+      async function fetchStudentDiagnosis(studentId) {
+        if (state.mode === "live") {
+          const res = await fetch(`/api/students/${encodeURIComponent(studentId)}/diagnosis`, { cache: "no-store" });
+          if (!res.ok) throw new Error("Student not found");
+          state.selectedDiagnosis = await res.json();
+        } else {
+          const student = state.labData.students.find((s) => s.student_id === studentId);
+          if (!student) return;
+          const assessments = state.labData.assessments
+            .filter((a) => a.student_id === studentId)
+            .sort((a, b) => a.assessment_date.localeCompare(b.assessment_date));
+          const diagnosis = scoreStudentRisk(assessments);
+          const remediation_plan = generateRemediation(diagnosis, student.full_name);
+          const interventions = state.labData.interventions
+            .filter((i) => i.student_id === studentId)
+            .slice()
+            .reverse();
+          state.selectedDiagnosis = { student, assessments, diagnosis, remediation_plan, interventions };
+        }
+        state.selectedStudentId = studentId;
+        renderDrawer();
+      }
+
+      function applyLanguageAndTheme() {
+        const html = document.documentElement;
+        html.setAttribute("data-theme", state.theme);
+        html.setAttribute("lang", state.lang);
+        html.setAttribute("dir", state.lang === "ar" ? "rtl" : "ltr");
+
+        const t = I18N[state.lang];
+        document.getElementById("brandTitle").textContent = t.brandTitle;
+        document.getElementById("brandSubtitle").textContent = t.brandSubtitle;
+        document.getElementById("modeText").textContent = state.mode === "live" ? t.modeLive : t.modeLab;
+        document.getElementById("ingestBtn").textContent = t.ingestBtn;
+        document.getElementById("resetBtn").textContent = t.resetBtn;
+        document.getElementById("langToggle").textContent = t.langToggle;
+        document.getElementById("themeToggle").textContent = state.theme === "dark" ? t.themeLight : t.themeDark;
+
+        document.getElementById("kpiLabelStudents").textContent = t.kpiLabelStudents;
+        document.getElementById("kpiLabelMastery").textContent = t.kpiLabelMastery;
+        document.getElementById("kpiSubMastery").textContent = t.kpiSubMastery;
+        document.getElementById("kpiLabelRisk").textContent = t.kpiLabelRisk;
+        document.getElementById("kpiLabelInterventions").textContent = t.kpiLabelInterventions;
+        document.getElementById("kpiSubInterventions").textContent = t.kpiSubInterventions;
+
+        document.getElementById("riskChartTitle").textContent = t.riskChartTitle;
+        document.getElementById("riskChartSub").textContent = t.riskChartSub;
+        document.getElementById("skillChartTitle").textContent = t.skillChartTitle;
+        document.getElementById("skillChartSub").textContent = t.skillChartSub;
+        document.getElementById("rosterTitle").textContent = t.rosterTitle;
+        document.getElementById("rosterSub").textContent = t.rosterSub;
+        document.getElementById("searchInput").placeholder = t.searchPlaceholder;
+        document.getElementById("gradeFilter").options[0].textContent = t.allGrades;
+        document.getElementById("tierFilter").options[0].textContent = t.allTiers;
+
+        document.getElementById("thId").textContent = t.thId;
+        document.getElementById("thName").textContent = t.thName;
+        document.getElementById("thGrade").textContent = t.thGrade;
+        document.getElementById("thMastery").textContent = t.thMastery;
+        document.getElementById("thSlope").textContent = t.thSlope;
+        document.getElementById("thCompletion").textContent = t.thCompletion;
+        document.getElementById("thRiskScore").textContent = t.thRiskScore;
+        document.getElementById("thTier").textContent = t.thTier;
+        document.getElementById("thWeakSkills").textContent = t.thWeakSkills;
+        document.getElementById("thAction").textContent = t.thAction;
+
+        document.getElementById("closeDrawerBtn").textContent = t.closeBtn;
+        document.getElementById("drawerChartTitle").textContent = t.drawerChartTitle;
+        document.getElementById("drawerContribTitle").textContent = t.drawerContribTitle;
+        document.getElementById("drawerRemediationTitle").textContent = t.drawerRemediationTitle;
+        document.getElementById("drawerInterventionTitle").textContent = t.drawerInterventionTitle;
+        document.getElementById("ivSubmitBtn").textContent = t.ivSubmitBtn;
+        document.getElementById("ivNotes").placeholder = t.ivNotesPlaceholder;
+        document.getElementById("csvModalTitle").textContent = t.csvModalTitle;
+        document.getElementById("csvModalSub").textContent = t.csvModalSub;
+        document.getElementById("closeCsvBtn").textContent = t.closeBtn;
+        document.getElementById("fillSampleCsvBtn").textContent = t.fillSampleCsvBtn;
+        document.getElementById("submitCsvBtn").textContent = t.submitCsvBtn;
+        document.getElementById("footerLeft").textContent = t.footerLeft;
+      }
+
+      function setupCanvas(canvas) {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const w = Math.max(240, Math.floor(rect.width));
+        const h = Math.max(160, Math.floor(rect.height));
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        return { ctx, w, h };
+      }
+
+      function getCssVar(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      }
+
+      function drawRiskChart() {
+        if (!state.overview) return;
+        const { ctx, w, h } = setupCanvas(document.getElementById("riskChart"));
+        const dist = state.overview.risk_distribution;
+        const tiers = [
+          { key: "CRITICAL", val: dist.CRITICAL || 0, color: getCssVar("--crimson") },
+          { key: "HIGH", val: dist.HIGH || 0, color: getCssVar("--amber") },
+          { key: "MEDIUM", val: dist.MEDIUM || 0, color: getCssVar("--accent") },
+          { key: "LOW", val: dist.LOW || 0, color: getCssVar("--emerald") }
+        ];
+        const maxVal = Math.max(1, ...tiers.map((t) => t.val));
+        const padLeft = 34;
+        const padRight = 16;
+        const padTop = 20;
+        const padBottom = 34;
+        const plotW = w - padLeft - padRight;
+        const plotH = h - padTop - padBottom;
+        const barW = Math.min(54, (plotW / tiers.length) * 0.56);
+        const step = plotW / tiers.length;
+        const textMuted = getCssVar("--text-muted");
+        const textMain = getCssVar("--text-main");
+        const border = getCssVar("--border");
+
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, h - padBottom);
+        ctx.lineTo(w - padRight, h - padBottom);
+        ctx.stroke();
+
+        tiers.forEach((tier, idx) => {
+          const cx = padLeft + step * idx + step / 2;
+          const barH = (tier.val / maxVal) * (plotH - 12);
+          const x = cx - barW / 2;
+          const y = h - padBottom - barH;
+
+          ctx.fillStyle = tier.color;
+          ctx.beginPath();
+          ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [6, 6, 0, 0]) : ctx.rect(x, y, barW, barH);
+          ctx.fill();
+
+          ctx.fillStyle = textMain;
+          ctx.font = "600 12px 'JetBrains Mono', monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(String(tier.val), cx, y - 6);
+
+          ctx.fillStyle = textMuted;
+          ctx.font = "600 11px 'JetBrains Mono', monospace";
+          ctx.fillText(tier.key, cx, h - 12);
+        });
+      }
+
+      function drawSkillChart() {
+        if (!state.overview) return;
+        const { ctx, w, h } = setupCanvas(document.getElementById("skillChart"));
+        const gaps = (state.overview.skill_gaps || []).slice(0, 5);
+        if (!gaps.length) return;
+
+        const textMain = getCssVar("--text-main");
+        const textMuted = getCssVar("--text-muted");
+        const bgSubtle = getCssVar("--bg-subtle");
+        const accent = getCssVar("--accent");
+        const amber = getCssVar("--amber");
+        const crimson = getCssVar("--crimson");
+
+        const padTop = 10;
+        const rowH = Math.floor((h - padTop - 8) / gaps.length);
+        const labelW = Math.min(185, w * 0.42);
+        const valW = 64;
+        const barMaxW = Math.max(60, w - labelW - valW - 18);
+
+        gaps.forEach((gap, idx) => {
+          const yCenter = padTop + idx * rowH + rowH / 2;
+          const label = state.lang === "ar" ? gap.skill_ar : gap.skill;
+
+          ctx.fillStyle = textMain;
+          ctx.font = "500 12px 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', sans-serif";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "middle";
+          ctx.fillText(label.slice(0, 26), 6, yCenter);
+
+          const barX = labelW;
+          const barY = yCenter - 7;
+          ctx.fillStyle = bgSubtle;
+          ctx.fillRect(barX, barY, barMaxW, 14);
+
+          const fillColor = gap.weakness_rate >= 50 ? crimson : gap.weakness_rate >= 30 ? amber : accent;
+          const fillW = (Math.min(100, gap.weakness_rate) / 100) * barMaxW;
+          ctx.fillStyle = fillColor;
+          ctx.fillRect(barX, barY, fillW, 14);
+
+          ctx.fillStyle = textMuted;
+          ctx.font = "600 11px 'JetBrains Mono', monospace";
+          ctx.textAlign = "right";
+          ctx.fillText(`${gap.weakness_rate.toFixed(0)}%`, w - 4, yCenter);
+        });
+      }
+
+      function drawTrajectoryChart(assessments, slope) {
+        const { ctx, w, h } = setupCanvas(document.getElementById("trajectoryChart"));
+        if (!assessments || !assessments.length) return;
+
+        const accent = getCssVar("--accent");
+        const amber = getCssVar("--amber");
+        const border = getCssVar("--border");
+        const textMuted = getCssVar("--text-muted");
+        const textMain = getCssVar("--text-main");
+
+        const padL = 36;
+        const padR = 18;
+        const padT = 18;
+        const padB = 28;
+        const plotW = w - padL - padR;
+        const plotH = h - padT - padB;
+
+        [0, 50, 70, 100].forEach((tick) => {
+          const y = padT + ((100 - tick) / 100) * plotH;
+          ctx.strokeStyle = border;
+          ctx.lineWidth = tick === 70 ? 1.2 : 0.8;
+          if (tick === 70) ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(padL, y);
+          ctx.lineTo(w - padR, y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = textMuted;
+          ctx.font = "500 10px 'JetBrains Mono', monospace";
+          ctx.textAlign = "right";
+          ctx.textBaseline = "middle";
+          ctx.fillText(String(tick), padL - 6, y);
+        });
+
+        const n = assessments.length;
+        const coords = assessments.map((a, idx) => {
+          const x = n === 1 ? padL + plotW / 2 : padL + (idx / (n - 1)) * plotW;
+          const pct = Math.min(100, Math.max(0, (Number(a.score) / Number(a.max_score || 100)) * 100));
+          const y = padT + ((100 - pct) / 100) * plotH;
+          return { x, y, pct, date: a.assessment_date };
+        });
+
+        if (n >= 2) {
+          const meanX = (n - 1) / 2;
+          const meanY = coords.reduce((acc, c) => acc + c.pct, 0) / n;
+          const yStart = Math.min(100, Math.max(0, meanY + slope * (0 - meanX)));
+          const yEnd = Math.min(100, Math.max(0, meanY + slope * (n - 1 - meanX)));
+          ctx.strokeStyle = amber;
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 4]);
+          ctx.beginPath();
+          ctx.moveTo(coords[0].x, padT + ((100 - yStart) / 100) * plotH);
+          ctx.lineTo(coords[n - 1].x, padT + ((100 - yEnd) / 100) * plotH);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        coords.forEach((pt, idx) => {
+          if (idx === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+
+        coords.forEach((pt) => {
+          ctx.fillStyle = accent;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = textMain;
+          ctx.font = "600 10px 'JetBrains Mono', monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(`${pt.pct.toFixed(0)}`, pt.x, pt.y - 10);
+
+          ctx.fillStyle = textMuted;
+          ctx.font = "500 9.5px 'JetBrains Mono', monospace";
+          ctx.fillText(pt.date.slice(5), pt.x, h - 10);
+        });
+      }
+
+      function renderRoster() {
+        if (!state.overview) return;
+        const query = document.getElementById("searchInput").value.trim().toLowerCase();
+        const grade = document.getElementById("gradeFilter").value;
+        const tier = document.getElementById("tierFilter").value;
+        const t = I18N[state.lang];
+
+        const filtered = state.overview.students.filter((s) => {
+          if (grade !== "ALL" && s.grade_level !== grade) return false;
+          if (tier !== "ALL" && s.risk_tier !== tier) return false;
+          if (query) {
+            const matchId = s.student_id.toLowerCase().includes(query);
+            const matchName = s.full_name.toLowerCase().includes(query);
+            if (!matchId && !matchName) return false;
+          }
+          return true;
+        });
+
+        const tbody = document.getElementById("rosterBody");
+        tbody.innerHTML = "";
+        filtered.forEach((stu) => {
+          const tr = document.createElement("tr");
+          const slopeSign = stu.trend_slope > 0 ? "+" : "";
+          const slopeColor = stu.trend_slope < -1.5 ? "var(--crimson)" : stu.trend_slope > 1.5 ? "var(--emerald)" : "var(--text-muted)";
+          const riskColor = stu.risk_tier === "CRITICAL" ? "var(--crimson)" : stu.risk_tier === "HIGH" ? "var(--amber)" : stu.risk_tier === "MEDIUM" ? "var(--accent)" : "var(--emerald)";
+          const weakHtml = stu.weak_skills.length
+            ? stu.weak_skills.slice(0, 2).map((sk) => `<span class="skill-tag">${state.lang === "ar" && SKILL_META[sk] ? SKILL_META[sk].ar : sk}</span>`).join("")
+            : `<span class="skill-tag">${t.noWeakSkills}</span>`;
+
+          tr.innerHTML = `
+            <td><span class="mono">${stu.student_id}</span></td>
+            <td><strong>${stu.full_name}</strong></td>
+            <td>${stu.grade_level}</td>
+            <td><span class="mono">${stu.mastery_avg.toFixed(1)}%</span></td>
+            <td><span class="mono" style="color:${slopeColor}; font-weight:600;">${slopeSign}${stu.trend_slope.toFixed(2)}</span></td>
+            <td><span class="mono">${stu.completion_rate.toFixed(0)}%</span></td>
+            <td>
+              <div class="risk-bar-wrap">
+                <div class="risk-bar"><div class="risk-bar-fill" style="width:${stu.risk_score}%; background:${riskColor};"></div></div>
+                <span class="mono">${stu.risk_score.toFixed(1)}</span>
+              </div>
+            </td>
+            <td><span class="badge tier-${stu.risk_tier}">${stu.risk_tier}</span></td>
+            <td>${weakHtml}</td>
+            <td><button type="button" class="btn btn-sm diagnose-btn" data-id="${stu.student_id}">${t.diagnoseBtn}</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        tbody.querySelectorAll(".diagnose-btn").forEach((btn) => {
+          btn.addEventListener("click", () => fetchStudentDiagnosis(btn.getAttribute("data-id")));
+        });
+      }
+
+      function renderDashboard() {
+        if (!state.overview) return;
+        const kpis = state.overview.kpis;
+        const t = I18N[state.lang];
+
+        document.getElementById("kpiStudents").textContent = String(kpis.total_students);
+        document.getElementById("kpiSubAssessments").textContent = `${kpis.total_assessments} ${t.assessmentsSuffix}`;
+        document.getElementById("kpiMastery").textContent = `${kpis.avg_mastery.toFixed(1)}%`;
+        document.getElementById("kpiAtRisk").textContent = String(kpis.at_risk_count);
+        document.getElementById("kpiSubCritical").textContent = `${kpis.critical_count} ${t.criticalSuffix}`;
+        document.getElementById("kpiInterventions").textContent = String(kpis.open_interventions);
+
+        drawRiskChart();
+        drawSkillChart();
+        renderRoster();
+      }
+
+      function renderDrawer() {
+        const data = state.selectedDiagnosis;
+        if (!data) return;
+        const t = I18N[state.lang];
+        const { student, assessments, diagnosis, remediation_plan, interventions } = data;
+
+        document.getElementById("drawerName").textContent = `${student.full_name} (${student.student_id})`;
+        document.getElementById("drawerMeta").textContent = `${student.grade_level} · ${assessments.length} ${t.assessmentsSuffix}`;
+
+        document.getElementById("drawerSummaryRow").innerHTML = `
+          <span class="badge tier-${diagnosis.risk_tier}">${diagnosis.risk_tier} (${diagnosis.risk_score.toFixed(1)} / 100)</span>
+          <span class="skill-tag">${t.thMastery}: <strong class="mono">${diagnosis.mastery_avg.toFixed(1)}%</strong></span>
+          <span class="skill-tag">${t.thSlope}: <strong class="mono">${diagnosis.trend_slope > 0 ? "+" : ""}${diagnosis.trend_slope.toFixed(2)}</strong></span>
+          <span class="skill-tag">${t.thCompletion}: <strong class="mono">${diagnosis.completion_rate.toFixed(0)}%</strong></span>
+        `;
+
+        const contribs = diagnosis.feature_contributions;
+        const items = [
+          { label: t.masteryDeficit, val: contribs.mastery_deficit, max: 45 },
+          { label: t.negativeTrajectory, val: contribs.negative_trajectory, max: 25 },
+          { label: t.completionGap, val: contribs.completion_gap, max: 15 },
+          { label: t.skillGap, val: contribs.skill_concentration_gap, max: 15 }
+        ];
+        document.getElementById("drawerContribs").innerHTML = items.map((item) => `
+          <div class="contrib-row">
+            <div class="contrib-head">
+              <span>${item.label}</span>
+              <span class="mono">${item.val.toFixed(2)} / ${item.max}</span>
+            </div>
+            <div class="contrib-track">
+              <div class="contrib-fill" style="width:${Math.min(100, (item.val / item.max) * 100)}%;"></div>
+            </div>
+          </div>
+        `).join("");
+
+        const reasons = state.lang === "ar" ? diagnosis.reasons_ar : diagnosis.reasons_en;
+        document.getElementById("drawerReasons").innerHTML = reasons.map((r) => `<li>${r}</li>`).join("");
+
+        document.getElementById("drawerRemSummary").textContent =
+          state.lang === "ar" ? remediation_plan.summary_ar : remediation_plan.summary_en;
+        document.getElementById("drawerRemSteps").innerHTML = (remediation_plan.student_actions || []).map((step) => `
+          <div class="remediation-item">
+            <strong>${state.lang === "ar" ? step.skill_ar : step.skill}</strong>
+            (<span class="mono">${Number(step.current_avg || 0).toFixed(0)}% → ${Number(step.target_score || 75).toFixed(0)}%</span>)
+            <div style="margin-top:4px; color:var(--text-muted);">${state.lang === "ar" ? step.step_ar : step.step_en}</div>
+          </div>
+        `).join("");
+
+        const ivList = document.getElementById("drawerInterventionsList");
+        ivList.innerHTML = (interventions || []).map((iv) => `
+          <div class="remediation-item">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:center;">
+              <strong>${iv.action_type}</strong>
+              <span class="badge tier-MEDIUM">${iv.status}</span>
+            </div>
+            <div style="margin-top:4px;">${iv.notes}</div>
+            <div style="margin-top:4px; font-size:0.75rem; color:var(--text-muted);">${iv.teacher_name} · <span class="mono">${(iv.created_at || "").slice(0, 10)}</span></div>
+          </div>
+        `).join("");
+
+        document.getElementById("drawerBackdrop").classList.add("open");
+        requestAnimationFrame(() => drawTrajectoryChart(assessments, diagnosis.trend_slope));
+      }
+
+      document.getElementById("langToggle").addEventListener("click", () => {
+        state.lang = state.lang === "ar" ? "en" : "ar";
+        applyLanguageAndTheme();
+        renderDashboard();
+        if (document.getElementById("drawerBackdrop").classList.contains("open")) {
+          renderDrawer();
+        }
+      });
+
+      document.getElementById("themeToggle").addEventListener("click", () => {
+        state.theme = state.theme === "dark" ? "light" : "dark";
+        localStorage.setItem("baseer_theme", state.theme);
+        applyLanguageAndTheme();
+        renderDashboard();
+        if (document.getElementById("drawerBackdrop").classList.contains("open") && state.selectedDiagnosis) {
+          drawTrajectoryChart(state.selectedDiagnosis.assessments, state.selectedDiagnosis.diagnosis.trend_slope);
+        }
+      });
+
+      ["searchInput", "gradeFilter", "tierFilter"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", renderRoster);
+        document.getElementById(id).addEventListener("change", renderRoster);
+      });
+
+      document.getElementById("closeDrawerBtn").addEventListener("click", () => {
+        document.getElementById("drawerBackdrop").classList.remove("open");
+      });
+
+      document.getElementById("drawerBackdrop").addEventListener("click", (e) => {
+        if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
+      });
+
+      document.getElementById("interventionForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!state.selectedStudentId) return;
+        const msg = document.getElementById("ivStatusMsg");
+        msg.className = "status-msg";
+        const payload = {
+          student_id: state.selectedStudentId,
+          action_type: document.getElementById("ivActionType").value,
+          status: document.getElementById("ivStatus").value,
+          notes: document.getElementById("ivNotes").value.trim(),
+          teacher_name: "أ. طارق ابوعشي"
+        };
+        try {
+          if (state.mode === "live") {
+            const res = await fetch("/api/interventions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.detail || "Failed to save intervention");
+            }
+          } else {
+            state.labData.interventions.push({
+              id: state.labData.interventions.length + 1,
+              ...payload,
+              created_at: new Date().toISOString()
+            });
+          }
+          document.getElementById("ivNotes").value = "";
+          msg.textContent = state.lang === "ar" ? "تم حفظ خطة التدخل بنجاح." : "Intervention saved successfully.";
+          msg.className = "status-msg show ok";
+          await fetchOverview();
+          await fetchStudentDiagnosis(state.selectedStudentId);
+        } catch (err) {
+          msg.textContent = err.message;
+          msg.className = "status-msg show err";
+        }
+      });
+
+      document.getElementById("ingestBtn").addEventListener("click", () => {
+        document.getElementById("csvStatusMsg").className = "status-msg";
+        document.getElementById("csvModalBackdrop").classList.add("open");
+      });
+
+      document.getElementById("closeCsvBtn").addEventListener("click", () => {
+        document.getElementById("csvModalBackdrop").classList.remove("open");
+      });
+
+      document.getElementById("fillSampleCsvBtn").addEventListener("click", () => {
+        document.getElementById("csvInput").value = [
+          "student_id,full_name,grade_level,skill,assessment_title,score,assessment_date",
+          "DS-113,متعلم نموذجي #113,الصف الثاني متوسط,Python Logic,تحدي الحلقات,46,2026-10-08",
+          "DS-113,متعلم نموذجي #113,الصف الثاني متوسط,Algorithms,مسار الخوارزميات,39,2026-10-12",
+          "DS-101,متعلم نموذجي #101,الصف الأول متوسط,Python Logic,اختبار تعويضي,66,2026-10-12"
+        ].join("\n");
+      });
+
+      document.getElementById("submitCsvBtn").addEventListener("click", async () => {
+        const csvText = document.getElementById("csvInput").value;
+        const msg = document.getElementById("csvStatusMsg");
+        msg.className = "status-msg";
+        try {
+          let result;
+          if (state.mode === "live") {
+            const res = await fetch("/api/assessments/ingest", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ csv_text: csvText })
+            });
+            const body = await res.json();
+            if (!res.ok) throw new Error(body.detail || "CSV ingestion failed");
+            result = body;
+          } else {
+            result = parseCsvInLab(csvText);
+          }
+          msg.textContent = state.lang === "ar"
+            ? `تم استيراد ${result.ingested_count} تقييم بنجاح (${result.students_affected} طالب).`
+            : `Ingested ${result.ingested_count} records across ${result.students_affected} students.`;
+          msg.className = "status-msg show ok";
+          await fetchOverview();
+        } catch (err) {
+          msg.textContent = err.message;
+          msg.className = "status-msg show err";
+        }
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", async () => {
+        if (state.mode === "live") {
+          await fetch("/api/demo/reset", { method: "POST" });
+        } else {
+          seedLabCohort();
+        }
+        await fetchOverview();
+      });
+
+      window.addEventListener("resize", () => {
+        drawRiskChart();
+        drawSkillChart();
+        if (document.getElementById("drawerBackdrop").classList.contains("open") && state.selectedDiagnosis) {
+          drawTrajectoryChart(state.selectedDiagnosis.assessments, state.selectedDiagnosis.diagnosis.trend_slope);
+        }
+      });
+
+      (async function init() {
+        seedLabCohort();
+        await detectExecutionMode();
+        applyLanguageAndTheme();
+        await fetchOverview();
+      })();
+    })();
+  </script>
+</body>
+</html>

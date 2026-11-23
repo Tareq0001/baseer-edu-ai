@@ -1,0 +1,38 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: baseer-postgres
+    environment:
+      POSTGRES_DB: baseer_edu
+      POSTGRES_USER: baseer_admin
+      POSTGRES_PASSWORD: baseer_local_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - baseer_pg_data:/var/lib/postgresql/data
+      - ./sql/init_postgres.sql:/docker-entrypoint-initdb.d/01_init_postgres.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U baseer_admin -d baseer_edu"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  baseer-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baseer-api
+    environment:
+      BASEER_DB_PATH: /app/data/baseer.db
+      DATABASE_URL: postgresql://baseer_admin:baseer_local_dev_password@postgres:5432/baseer_edu
+    ports:
+      - "8000:8000"
+    volumes:
+      - baseer_sqlite_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  baseer_pg_data:
+  baseer_sqlite_data:
